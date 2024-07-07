@@ -14,7 +14,7 @@
                 END AS result
         FROM tables.tbl_user
         WHERE
-            is_deleted = 0
+            is_deleted = false
           AND email = #{email}
           AND password = #{password}
     </select>
@@ -23,8 +23,8 @@
     <update id="updateTokenValue">
         UPDATE tables.tbl_user
         SET token_value = #{refreshToken}
-        WHERE user_key = #{userKey}
-          AND is_deleted = 0
+        WHERE user_key::text = #{userKey}
+          AND is_deleted = false
     </update>
 
     <!-- 로그아웃 -->
@@ -32,7 +32,7 @@
         UPDATE tables.tbl_user
         SET token_value = null
         WHERE email = #{email}
-          AND is_deleted = 0
+          AND is_deleted = false
     </update>
 
 </mapper>

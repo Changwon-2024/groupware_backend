@@ -10,7 +10,7 @@
         SELECT user_key
         FROM tables.tbl_user
         WHERE email = #{email}
-          AND is_deleted = 0
+          AND is_deleted = false
     </select>
 
     <!-- 유저 키로 리프레시 토큰 값 조회 -->
@@ -18,7 +18,7 @@
         SELECT token_value
         FROM tables.tbl_user
         WHERE user_key = #{userKey}
-          AND is_deleted = 0
+          AND is_deleted = false
     </select>
 
     <!-- 유저 정보 조회 -->
@@ -26,7 +26,7 @@
         SELECT email, name
         FROM tables.tbl_user
         WHERE user_key = #{userKey}
-          AND is_deleted = 0
+          AND is_deleted = false
     </select>
 
 </mapper>

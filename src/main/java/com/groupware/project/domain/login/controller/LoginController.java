@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 @Tag(name = "00. 로그인 관련")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("login")
+@RequestMapping("sign")
 public class LoginController {
 
     private final LoginService loginService;
@@ -30,7 +30,7 @@ public class LoginController {
 
     @Operation(summary = "1. 로그인",
             description = "로그인 후 refresh 토큰을 발급하기 위한 api입니다.")
-    @PostMapping("sign")
+    @PostMapping("login")
     public ResponseEntity<ResponseDTO<String>> login(
             @RequestBody @Valid LoginDTO loginDTO,
             HttpServletResponse response) {
