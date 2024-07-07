@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
     // AccessDeny Error
     @ExceptionHandler({CustomAccessDenyException.class})
     public ResponseEntity<?> customAccessDenyException() {
-        String message = "권한이 부족합니다. 다시 시도해 주세요.";
+        String message = "권한이 부족해요. 다시 시도해 주세요.";
         ResponseDTO<String> responseDTO =
                 ResponseDTO.<String>builder()
                         .result(0)
@@ -60,7 +60,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({NullPointerException.class})
     public ResponseEntity<?> nullPointException(final NullPointerException e) {
         log.warn("error", e);
-        String message = "요청에 필요한 필수 정보가 부족합니다. 잠시 후 다시 시도하거나 관리자에게 문의하세요.";
+        String message = "요청에 필요한 필수 정보가 부족해요. 잠시 후 다시 시도하거나 관리자에게 문의하세요.";
         ResponseDTO<String> responseDTO =
                 ResponseDTO.<String>builder()
                         .result(0)
@@ -74,7 +74,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({RuntimeException.class})
     public ResponseEntity<?> runtimeException(final RuntimeException e) {
         log.warn("error", e);
-        String message = "지금은 처리할 수 없습니다. 잠시 후 다시 시도하거나 관리자에게 문의하세요.";
+        String message = "지금은 처리할 수 없어요. 잠시 후 다시 시도하거나 관리자에게 문의하세요.";
         ResponseDTO<String> responseDTO =
                 ResponseDTO.<String>builder()
                         .result(0)
@@ -88,7 +88,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({AccessDeniedException.class})
     public ResponseEntity<?> unauthorizedException(final AccessDeniedException e) {
         log.warn("error", e);
-        String message = "권한이 없습니다.";
+        String message = "권한이 없어요. 잠시 후 다시 시도하세요.";
         ResponseDTO<String> responseDTO =
                 ResponseDTO.<String>builder()
                         .result(0)
@@ -102,7 +102,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({NoHandlerFoundException.class})
     public ResponseEntity<?> pageNotFoundException(final NoHandlerFoundException e) {
         log.warn("error", e);
-        String message = "요청한 페이지는 존재하지 않습니다.";
+        String message = "요청된 페이지는 존재하지 않아요.";
         ResponseDTO<String> responseDTO =
                 ResponseDTO.<String>builder()
                         .result(0)
@@ -116,7 +116,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({Exception.class})
     public ResponseEntity<?> unknownException(final Exception e) {
         log.warn("error", e);
-        String message = "지금은 처리할 수 없습니다. 잠시 후 다시 시도하거나 관리자에게 문의하세요.";
+        String message = "지금은 처리할 수 없어요. 잠시 후 다시 시도하거나 관리자에게 문의하세요.";
         ResponseDTO<String> responseDTO =
                 ResponseDTO.<String>builder()
                         .result(0)

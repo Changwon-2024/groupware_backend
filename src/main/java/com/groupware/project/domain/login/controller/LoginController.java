@@ -47,7 +47,7 @@ public class LoginController {
 
         ResponseDTO<String> responseDTO =
                 ResponseDTO.<String>builder()
-                        .message("로그인 되었습니다.")
+                        .message("로그인 되었어요.")
                         .data(refreshToken)
                         .result(1)
                         .build();
@@ -121,7 +121,7 @@ public class LoginController {
 
         ResponseDTO<String> responseDTO =
                 ResponseDTO.<String>builder()
-                        .data("로그아웃 되었습니다")
+                        .data("로그아웃 되었어요.")
                         .result(1)
                         .build();
 
