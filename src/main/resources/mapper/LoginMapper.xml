@@ -19,20 +19,20 @@
           AND password = #{password}
     </select>
 
-    <!-- 리프레시 토큰 갱신 -->
-    <update id="updateTokenValue">
-        UPDATE tables.tbl_user
-        SET token_value = #{refreshToken}
-        WHERE user_key::text = #{userKey}
-          AND is_deleted = false
-    </update>
-
-    <!-- 로그아웃 -->
-    <update id="logout">
-        UPDATE tables.tbl_user
-        SET token_value = null
+    <!-- 이메일로 유저 키 조회 -->
+    <select id="getUserKey" resultType="java.lang.String">
+        SELECT user_key
+        FROM tables.tbl_user
         WHERE email = #{email}
           AND is_deleted = false
-    </update>
+    </select>
+
+    <!-- 유저 정보 조회 -->
+    <select id="getUserInfo" resultType="com.groupware.project.global.jwt.dto.JwtResponseDTO">
+        SELECT email, name
+        FROM tables.tbl_user
+        WHERE user_key = #{userKey}::uuid
+          AND is_deleted = false
+    </select>
 
 </mapper>

@@ -1,5 +1,6 @@
 package com.groupware.project.global.jwt.service;
 
+import com.groupware.project.domain.login.mapper.LoginMapper;
 import com.groupware.project.global.exceptions.CustomRuntimeException;
 import com.groupware.project.global.exceptions.CustomTokenException;
 import com.groupware.project.global.jwt.dto.JwtResponseDTO;
@@ -20,6 +21,7 @@ import java.util.Date;
 public class JwtGlobalService {
 
     private final JwtGlobalMapper jwtGlobalMapper;
+    private final LoginMapper loginMapper;
 
     private SecretKey secretKey;
 
@@ -31,17 +33,17 @@ public class JwtGlobalService {
     public JwtResponseDTO getTokenInfo(String accessToken) {
 
         if (accessToken == null || accessToken.isEmpty())
-            throw new CustomTokenException("로그인 정보가 만료되었어요. 계속하려면 다시 로그인해주세요.");
+            throw new CustomTokenException();
 
         if (accessToken.startsWith("Bearer "))
             accessToken = accessToken.substring(7);
 
         Date tokenDate = getExpiration(accessToken);
         if (tokenDate.before(new Date()))
-            throw new CustomTokenException("로그인 정보가 만료되었어요. 계속하려면 다시 로그인해주세요.");
+            throw new CustomTokenException();
 
-        String userKey = jwtGlobalMapper.getUserKey(getEmail(accessToken));
-        JwtResponseDTO jwtResponseDTO = jwtGlobalMapper.getUserInfo(userKey);
+        String userKey = loginMapper.getUserKey(getEmail(accessToken));
+        JwtResponseDTO jwtResponseDTO = loginMapper.getUserInfo(userKey);
 
         if (jwtResponseDTO == null)
             throw new CustomRuntimeException("일치하는 회원정보가 없어요. 다시 시도해 주세요.");
@@ -56,10 +58,10 @@ public class JwtGlobalService {
      * @param refreshToken 리프레시 토큰
      * @return 엑세스 토큰
      */
-    public String silent(String refreshToken) {
+    public String silent(String refreshToken, String loginIp) {
 
         if (refreshToken == null)
-            throw new CustomTokenException("로그인 정보가 만료되었어요. 계속하려면 다시 로그인해주세요.");
+            throw new CustomTokenException();
 
         if (refreshToken.startsWith("Bearer "))
             refreshToken = refreshToken.substring(7);
@@ -67,36 +69,39 @@ public class JwtGlobalService {
         // 리프레시 토큰 만기 일자 비교
         Date expireDate = getExpiration(refreshToken);
         if (expireDate.before(new Date()))
-            throw new CustomTokenException("로그인 정보가 만료되었어요. 계속하려면 다시 로그인해주세요.");
+            throw new CustomTokenException();
 
         String email = getEmail(refreshToken);
-        String userKey = jwtGlobalMapper.getUserKey(email);
+        String userKey = loginMapper.getUserKey(email);
 
         // 리프레시 토큰값 일치 여부 비교
-        String originalRefreshToken = jwtGlobalMapper.getTokenValue(userKey);
-        if (!originalRefreshToken.equals(refreshToken))
-            throw new CustomTokenException("로그인 정보가 변경되었어요. 계속하려면 다시 로그인해주세요.");
+        String originalRefreshToken = jwtGlobalMapper.getTokenValue(userKey, loginIp);
+        if (!refreshToken.equals(originalRefreshToken))
+            throw new CustomTokenException();
 
         return createAccessToken(email);
     }
 
     // 엑세스 토큰 검증
-    public JwtResponseDTO valid(String accessToken) {
+    public JwtResponseDTO valid(String accessToken, String loginIp) {
 
         if (accessToken == null)
-            throw new CustomTokenException("로그인 정보가 만료되었어요. 계속하려면 다시 로그인해주세요.");
+            throw new CustomTokenException();
 
         if (accessToken.startsWith("Bearer "))
             accessToken = accessToken.substring(7);
 
         Date expireDate = getExpiration(accessToken);
         if (expireDate.before(new Date()))
-            throw new CustomTokenException("로그인 정보가 만료되었어요. 계속하려면 다시 로그인해주세요.");
+            throw new CustomTokenException();
 
         String email = getEmail(accessToken);
-        String userKey = jwtGlobalMapper.getUserKey(email);
+        String userKey = loginMapper.getUserKey(email);
 
-        return jwtGlobalMapper.getUserInfo(userKey);
+        if (jwtGlobalMapper.isCurrentIpPermitted(userKey, loginIp))
+            throw new CustomTokenException();
+
+        return loginMapper.getUserInfo(userKey);
     }
 
 
@@ -142,14 +147,14 @@ public class JwtGlobalService {
                     .getPayload()
                     .getSubject();
         } catch(ExpiredJwtException e) {
-            throw new CustomTokenException("로그인 정보가 만료되었어요. 계속하려면 다시 로그인해주세요.");
+            throw new CustomTokenException();
         }
     }
 
     // 만료날짜 얻기
     public Date getExpiration(String token) {
         if(token == null || token.isBlank()) {
-            throw new CustomTokenException("로그인 정보가 만료되었어요. 계속하려면 다시 로그인해주세요.");
+            throw new CustomTokenException();
         }
         try {
             return Jwts.parser()
@@ -159,7 +164,7 @@ public class JwtGlobalService {
                     .getPayload()
                     .getExpiration();
         } catch(Exception e) {
-            throw new CustomTokenException("로그인 정보가 만료되었어요. 계속하려면 다시 로그인해주세요.");
+            throw new CustomTokenException();
         }
     }
 

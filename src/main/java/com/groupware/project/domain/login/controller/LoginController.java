@@ -33,9 +33,11 @@ public class LoginController {
     @PostMapping("login")
     public ResponseEntity<ResponseDTO<String>> login(
             @RequestBody @Valid LoginDTO loginDTO,
+            HttpServletRequest request,
             HttpServletResponse response) {
 
-        String refreshToken = loginService.login(loginDTO);
+        String loginIp = request.getRemoteAddr();
+        String refreshToken = loginService.login(loginDTO, loginIp);
 
         ResponseCookie cookie =
                 ResponseCookie.from("myGroupware", refreshToken)
@@ -58,7 +60,8 @@ public class LoginController {
     @Operation(summary = "2. 액세스 토큰 재발급",
             description = "refresh 토큰으로 access 토큰을 발급받습니다.")
     @PostMapping("/silent")
-    public ResponseEntity<ResponseDTO<String>> silent(HttpServletRequest request) {
+    public ResponseEntity<ResponseDTO<String>> silent(
+            HttpServletRequest request) {
 
         Cookie[] cookies = request.getCookies();
 
@@ -68,7 +71,8 @@ public class LoginController {
                 .map(Cookie::getValue)
                 .orElse("");
 
-        String accessToken = jwtGlobalService.silent(refreshToken);
+        String loginIp = request.getRemoteAddr();
+        String accessToken = jwtGlobalService.silent(refreshToken, loginIp);
 
         ResponseDTO<String> responseDTO = ResponseDTO.<String>builder()
                 .data(accessToken)
@@ -82,9 +86,11 @@ public class LoginController {
             description = "access 토큰이 유효한지 및 해당 토큰의 사원정보를 조회합니다.")
     @PostMapping("/valid")
     public ResponseEntity<ResponseDTO<JwtResponseDTO>> valid(
-            @Parameter(hidden = true) @RequestHeader("Authorization") String accessToken) {
+            @Parameter(hidden = true) @RequestHeader("Authorization") String accessToken,
+            HttpServletRequest request) {
 
-        JwtResponseDTO userInfo = jwtGlobalService.valid(accessToken);
+        String loginIp = request.getRemoteAddr();
+        JwtResponseDTO userInfo = jwtGlobalService.valid(accessToken, loginIp);
 
         ResponseDTO<JwtResponseDTO> responseDTO =
                 ResponseDTO.<JwtResponseDTO>builder()
@@ -108,8 +114,9 @@ public class LoginController {
                 .map(Cookie::getValue)
                 .orElse("");
 
-        String email = jwtGlobalService.silent(refreshToken);
-        loginService.logout(email);
+        String loginIp = request.getRemoteAddr();
+        String email = jwtGlobalService.silent(refreshToken, loginIp);
+        loginService.logout(email, loginIp);
 
         ResponseCookie responseCookie =
                 ResponseCookie.from("wimirGroupware", "")

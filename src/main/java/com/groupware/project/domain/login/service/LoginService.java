@@ -23,10 +23,10 @@ public class LoginService {
 
     // 로그인
     @Transactional
-    public String login(LoginDTO loginDTO) {
+    public String login(LoginDTO loginDTO, String loginIp) {
 
         String email = loginDTO.getEmail();
-        String userKey = jwtGlobalMapper.getUserKey(email);
+        String userKey = loginMapper.getUserKey(email);
         String password = loginDTO.getPassword();
 
         String encryptedPassword = CryptUtil.encrypt(password);
@@ -34,16 +34,20 @@ public class LoginService {
         if (!exist) throw new CustomRuntimeException("일치하는 회원정보가 없어요. 다시 시도해 주세요.");
 
         String refreshToken = jwtGlobalService.createRefreshToken(email);
-        loginMapper.updateTokenValue(userKey, refreshToken);
+        jwtGlobalMapper.updateTokenValue(userKey, refreshToken, loginIp);
+
+        // 접속 IP가 3개 이상인 경우 가장 오래전 접속한 토큰 비활성화
+        jwtGlobalMapper.forbidOldTokens(userKey);
 
         return refreshToken;
     }
 
     // 로그아웃
     @Transactional
-    public void logout(String email) {
+    public void logout(String email, String loginIp) {
 
-        loginMapper.logout(email);
+        String userKey = loginMapper.getUserKey(email);
+        jwtGlobalMapper.logout(userKey, loginIp);
     }
 
 }

@@ -30,12 +30,11 @@ public class GlobalExceptionHandler {
 
     // Token Error
     @ExceptionHandler({CustomTokenException.class})
-    public ResponseEntity<?> customTokenException(final CustomTokenException customException) {
-        log.warn("error", customException);
+    public ResponseEntity<?> customTokenException() {
         ResponseDTO<String> responseDTO =
                 ResponseDTO.<String>builder()
                         .result(-1)
-                        .message(customException.getMessage())
+                        .message("로그인 정보가 만료되었어요. 계속하려면 다시 로그인해주세요.")
                         .build();
         return ResponseEntity.ok().body(responseDTO);
     }
@@ -102,7 +101,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({NoHandlerFoundException.class})
     public ResponseEntity<?> pageNotFoundException(final NoHandlerFoundException e) {
         log.warn("error", e);
-        String message = "요청된 페이지는 존재하지 않아요.";
+        String message = "올바른 방법으로 페이지를 접근하지 않으셨어요. 다시 시도해 주세요.";
         ResponseDTO<String> responseDTO =
                 ResponseDTO.<String>builder()
                         .result(0)
