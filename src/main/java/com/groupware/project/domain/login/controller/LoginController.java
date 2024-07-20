@@ -119,7 +119,7 @@ public class LoginController {
         loginService.logout(email, loginIp);
 
         ResponseCookie responseCookie =
-                ResponseCookie.from("wimirGroupware", "")
+                ResponseCookie.from("myGroupware", "")
                         .maxAge(0)
                         .path("/")
                         .httpOnly(true)
