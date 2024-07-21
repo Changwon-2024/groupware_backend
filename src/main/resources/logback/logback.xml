@@ -2,7 +2,7 @@
 <configuration>
 
     <!-- 로그파일 저장 경로 -->
-    <property name="LOG_DIR" value="/Users/Shared/groupware/log" />
+    <property name="LOG_DIR" value="/home/ubuntu/groupware/resources/" />
 
     <!-- CONSOLE -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
