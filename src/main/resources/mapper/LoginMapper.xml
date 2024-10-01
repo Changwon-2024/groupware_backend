@@ -29,7 +29,7 @@
 
     <!-- 유저 정보 조회 -->
     <select id="getUserInfo" resultType="com.groupware.project.global.jwt.dto.JwtResponseDTO">
-        SELECT email, name
+        SELECT email, name, role_level
         FROM tables.tbl_user
         WHERE user_key = #{userKey}::uuid
           AND is_deleted = false

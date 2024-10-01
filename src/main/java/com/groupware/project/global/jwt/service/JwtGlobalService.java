@@ -26,11 +26,17 @@ public class JwtGlobalService {
     private SecretKey secretKey;
 
     @PostConstruct
-    public void init() {
+    private void init() {
         secretKey = Jwts.SIG.HS256.key().build();
     }
 
-    public JwtResponseDTO getTokenInfo(String accessToken) {
+    /**
+     * 유저 토큰 조회 및 권한 확인
+     * @param accessToken 유저 토큰
+     * @param accessLevel 접근 권한
+     * @return 로그인 정보
+     */
+    public JwtResponseDTO getTokenInfo(String accessToken, Integer accessLevel) {
 
         if (accessToken == null || accessToken.isEmpty())
             throw new CustomTokenException();
@@ -48,7 +54,11 @@ public class JwtGlobalService {
         if (jwtResponseDTO == null)
             throw new CustomRuntimeException("일치하는 회원정보가 없어요. 다시 시도해 주세요.");
 
-        return jwtResponseDTO;
+        if (accessLevel >= jwtResponseDTO.getRoleLevel())
+            return jwtResponseDTO;
+        else
+            throw new CustomRuntimeException("해당 요청을 위한 권한이 부족해요.");
+
     }
 
     /**
@@ -82,7 +92,12 @@ public class JwtGlobalService {
         return createAccessToken(email);
     }
 
-    // 엑세스 토큰 검증
+    /**
+     * 엑세스 토큰 검증
+     * @param accessToken 엑세스 토큰
+     * @param loginIp 접속 IP
+     * @return 유저 정보
+     */
     public JwtResponseDTO valid(String accessToken, String loginIp) {
 
         if (accessToken == null)
@@ -105,7 +120,11 @@ public class JwtGlobalService {
     }
 
 
-    // 리프레시 토큰 생성
+    /**
+     * 리프레시 토큰 생성
+     * @param email 접속 이메일
+     * @return 리프레시 토큰
+     */
     public String createRefreshToken(String email) {
         // 1 개월
         long refreshTokenValidTime = 1000L * 60 * 60 * 24 * 31;
@@ -122,7 +141,7 @@ public class JwtGlobalService {
     }
 
     // 액세스 토큰 생성
-    public String createAccessToken(String email) {
+    private String createAccessToken(String email) {
         // 두 시간
         long tokenValidTime = 1000L * 60 * 60 * 2;
         Date now = new Date();
@@ -138,7 +157,7 @@ public class JwtGlobalService {
     }
 
     // 사원 아이디 얻기
-    public String getEmail(String token) {
+    private String getEmail(String token) {
         try {
             return Jwts.parser()
                     .verifyWith(secretKey)
@@ -152,7 +171,7 @@ public class JwtGlobalService {
     }
 
     // 만료날짜 얻기
-    public Date getExpiration(String token) {
+    private Date getExpiration(String token) {
         if(token == null || token.isBlank()) {
             throw new CustomTokenException();
         }

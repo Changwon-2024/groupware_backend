@@ -12,4 +12,7 @@ public class JwtResponseDTO {
     @Schema(example = "유저명")
     private String name;
 
+    @Schema(example = "유저 권한")
+    private Integer roleLevel;
+
 }
