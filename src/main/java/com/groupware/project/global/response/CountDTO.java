@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 public class CountDTO {
 
     @Schema(example = "개수 (int)")
-    private int count;
+    private Integer count;
 
 }
