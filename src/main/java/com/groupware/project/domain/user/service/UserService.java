@@ -38,6 +38,10 @@ public class UserService {
             throw new CustomRuntimeException("비밀번호와 비밀번호 확인이 일치하지 않아요.");
         userSignDTO.setPassword(CryptUtil.encrypt(userSignDTO.getPassword()));
 
+        // 주소 암호화
+        if (!userSignDTO.getAddress().isEmpty())
+            userSignDTO.setAddress(CryptUtil.encrypt(userSignDTO.getAddress()));
+
         userMapper.signUp(userSignDTO);
 
     }
@@ -47,7 +51,9 @@ public class UserService {
      * @return 유저 목록
      */
     public List<UserInfoDTO> getUserList() {
-        
+
+        // TODO 주소 및 전화번호 복호화
+
         return Optional.ofNullable(userMapper.getUserList())
                 .orElse(Collections.emptyList());
     }
@@ -85,6 +91,8 @@ public class UserService {
         if (!userMapper.isEmailExist(jwtResponseDTO.getEmail()))
             throw new CustomRuntimeException("존재하지 않는 계정이에요.");
 
+        // TODO 주소 및 전화번호 복호화
+
         return userMapper.getMyPage(jwtResponseDTO.getEmail());
     }
 
@@ -99,6 +107,10 @@ public class UserService {
         // 접속 유저와 변경하려는 회원 정보의 이메일이 동일한지 확인
         if (!userModifyDTO.getEmail().equals(jwtResponseDTO.getEmail()))
             throw new CustomRuntimeException("본인 정보만 수정할 수 있어요.");
+
+        // TODO 기존 비밀번호 일치 여부 확인
+
+        // TODO 주소 및 전화번호 암호화
 
         // 권한 변경
         userMapper.updateMyPage(userModifyDTO);

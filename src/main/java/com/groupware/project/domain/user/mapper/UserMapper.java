@@ -30,4 +30,5 @@ public interface UserMapper {
 
     // 마이페이지 유저 정보 수정
     void updateMyPage(UserModifyDTO userModifyDTO);
+
 }
