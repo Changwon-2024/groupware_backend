@@ -86,4 +86,12 @@
         WHERE user_key = #{userKey}
     </update>
 
+    <!-- 유저 이메일 조회 -->
+    <select id="getUserEmail" resultType="java.lang.String">
+        SELECT email
+        FROM tables.tbl_user
+        WHERE is_deleted = false
+          AND user_key = #{userKey}
+    </select>
+
 </mapper>

@@ -31,4 +31,6 @@ public interface UserMapper {
     // 마이페이지 유저 정보 수정
     void updateMyPage(UserModifyDTO userModifyDTO);
 
+    // 유저 이메일 조회
+    String getUserEmail(String userKey);
 }
