@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-@Tag(name = "유저 관련")
+@Tag(name = "01. 유저 관련")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("user")

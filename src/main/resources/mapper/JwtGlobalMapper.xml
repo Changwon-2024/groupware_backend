@@ -44,7 +44,7 @@
         SELECT token_value
         FROM tables.tbl_user_login
         WHERE user_key = #{userKey}::uuid
-          AND client_ip = #{clientIp}
+          AND client_ip = #{loginIp}
           AND is_permitted = true
     </select>
 
@@ -56,7 +56,7 @@
                    END AS result
         FROM tables.tbl_user_login
         WHERE user_key = #{userKey}::uuid
-          AND client_ip = #{clientIp}
+          AND client_ip = #{loginIp}
           AND is_permitted = true
     </select>
 

@@ -15,7 +15,7 @@ public interface JwtGlobalMapper {
     void forbidOldTokens(String userKey);
 
     // 유저 키로 리프레시 토큰 값 조회
-    String getTokenValue(String userKey, String clientIp);
+    String getTokenValue(String userKey, String loginIp);
 
     // 접속 유저 및 IP 허용 여부
     Boolean isCurrentIpPermitted(String userKey, String loginIp);

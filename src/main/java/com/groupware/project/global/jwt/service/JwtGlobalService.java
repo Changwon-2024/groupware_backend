@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Slf4j
@@ -23,11 +24,11 @@ public class JwtGlobalService {
     private final JwtGlobalMapper jwtGlobalMapper;
     private final LoginMapper loginMapper;
 
-    private SecretKey secretKey;
+    private static SecretKey secretKey;
 
     @PostConstruct
     private void init() {
-        secretKey = Jwts.SIG.HS256.key().build();
+        secretKey = Jwts.SIG.HS512.key().build();
     }
 
     /**
@@ -113,7 +114,7 @@ public class JwtGlobalService {
         String email = getEmail(accessToken);
         String userKey = loginMapper.getUserKey(email);
 
-        if (jwtGlobalMapper.isCurrentIpPermitted(userKey, loginIp))
+        if (!jwtGlobalMapper.isCurrentIpPermitted(userKey, loginIp))
             throw new CustomTokenException();
 
         return loginMapper.getUserInfo(userKey);

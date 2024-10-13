@@ -2,6 +2,7 @@ package com.groupware.project.domain.login.controller;
 
 import com.groupware.project.domain.login.dto.LoginDTO;
 import com.groupware.project.domain.login.service.LoginService;
+import com.groupware.project.global.exceptions.CustomTokenException;
 import com.groupware.project.global.jwt.dto.JwtResponseDTO;
 import com.groupware.project.global.jwt.service.JwtGlobalService;
 import com.groupware.project.global.response.ResponseDTO;
@@ -70,6 +71,9 @@ public class LoginController {
                 .findFirst()
                 .map(Cookie::getValue)
                 .orElse("");
+
+        if (refreshToken.isEmpty())
+            throw new CustomTokenException();
 
         String loginIp = request.getRemoteAddr();
         String accessToken = jwtGlobalService.silent(refreshToken, loginIp);
