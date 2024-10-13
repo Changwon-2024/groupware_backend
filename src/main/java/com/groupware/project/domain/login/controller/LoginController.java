@@ -60,7 +60,7 @@ public class LoginController {
 
     @Operation(summary = "2. 액세스 토큰 재발급",
             description = "refresh 토큰으로 access 토큰을 발급받습니다.")
-    @PostMapping("/silent")
+    @PostMapping("silent")
     public ResponseEntity<ResponseDTO<String>> silent(
             HttpServletRequest request) {
 
@@ -88,7 +88,7 @@ public class LoginController {
 
     @Operation(summary = "3. 액세스 토큰 검증",
             description = "access 토큰이 유효한지 및 해당 토큰의 사원정보를 조회합니다.")
-    @PostMapping("/valid")
+    @PostMapping("valid")
     public ResponseEntity<ResponseDTO<JwtResponseDTO>> valid(
             @Parameter(hidden = true) @RequestHeader("Authorization") String accessToken,
             HttpServletRequest request) {
@@ -107,7 +107,7 @@ public class LoginController {
 
     @Operation(summary = "4. 로그아웃",
             description = "쿠키를 만료시킵니다.")
-    @PostMapping("/logout")
+    @PostMapping("logout")
     public ResponseEntity<ResponseDTO<String>> logout(HttpServletRequest request,
                                                       HttpServletResponse response) {
 

@@ -33,7 +33,7 @@ public class JwtGlobalService {
     /**
      * 유저 토큰 조회 및 권한 확인
      * @param accessToken 유저 토큰
-     * @param accessLevel 접근 권한
+     * @param accessLevel 접근 권한 (0: 어드민, 1: 편집, 2: 조회 및 다운로드, 3: 가입대기)
      * @return 로그인 정보
      */
     public JwtResponseDTO getTokenInfo(String accessToken, Integer accessLevel) {
