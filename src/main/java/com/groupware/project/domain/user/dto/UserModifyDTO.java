@@ -22,6 +22,9 @@ public class UserModifyDTO {
     @Schema(example = "비밀번호 확인")
     private String passwordConfirm;
 
+    @Schema(example = "이름")
+    private String name;
+
     @Schema(example = "전화번호")
     private String phoneNumber;
 

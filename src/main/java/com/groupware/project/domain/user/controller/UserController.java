@@ -10,6 +10,10 @@ import com.groupware.project.global.response.CountDTO;
 import com.groupware.project.global.response.ResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.SchemaProperties;
+import io.swagger.v3.oas.annotations.media.SchemaProperty;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +34,7 @@ public class UserController {
 
     @Operation(summary = "1. 회원가입",
             description = "회원가입을 위한 api입니다. 가입 시 승인 대기 상태로 가입됩니다.")
-    @PostMapping("login")
+    @PostMapping("sign-up")
     public ResponseEntity<?> signUp(@RequestBody @Valid UserSignDTO userSignDTO) {
 
         userService.signUp(userSignDTO);
@@ -87,7 +91,14 @@ public class UserController {
     @PostMapping("manage")
     public ResponseEntity<?> manageUser(
             @Parameter(hidden = true) @RequestHeader("Authorization") String accessToken,
-            @RequestBody Map<String, Object> requestBody) {
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+                    schemaProperties = {
+                            @SchemaProperty(name = "userKey",
+                                    schema = @Schema(type = "string", example = "권한을 바꿀 유저 키")),
+                            @SchemaProperty(name = "roleLevel",
+                                    schema = @Schema(type = "string", example = "권한 레벨 (0~3)")),
+                    }
+            ))@RequestBody Map<String, Object> requestBody) {
 
         jwtGlobalService.getTokenInfo(accessToken, 0);
 

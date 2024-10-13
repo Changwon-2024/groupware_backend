@@ -23,7 +23,7 @@
         INSERT INTO tables.tbl_user
         (email, password, name, phone_number, address, birth_date, gender_flag)
         VALUES
-        (#{email}, #{password}, #{name}, #{phoneNumber}, #{address}, #{birthDate}, #{genderFlag})
+        (#{email}, #{password}, #{name}, #{phoneNumber}, #{address}, #{birthDate}::date, #{genderFlag})
     </insert>
 
     <!-- (관리자용) 유저 목록 조회 -->
@@ -52,8 +52,8 @@
     <!-- (관리자용) 유저 권한 변경 -->
     <update id="manageUser">
         UPDATE tables.tbl_user
-        SET role_level = #{roleLevel}
-        WHERE user_key = #{userKey}
+        SET role_level = #{roleLevel}::int2
+        WHERE user_key = #{userKey}::uuid
     </update>
 
     <!-- 마이페이지 유저 조회 -->
@@ -81,9 +81,9 @@
             name = #{name},
             phone_number = #{phoneNumber},
             address = #{address},
-            birth_date = #{birthDate},
+            birth_date = #{birthDate}::date,
             gender_flag = #{genderFlag}
-        WHERE user_key = #{userKey}
+        WHERE user_key = #{userKey}::uuid
     </update>
 
     <!-- 유저 이메일 조회 -->
@@ -91,7 +91,7 @@
         SELECT email
         FROM tables.tbl_user
         WHERE is_deleted = false
-          AND user_key = #{userKey}
+          AND user_key = #{userKey}::uuid
     </select>
 
 </mapper>
