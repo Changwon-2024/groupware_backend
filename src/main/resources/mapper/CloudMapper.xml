@@ -22,4 +22,25 @@
         AND element_key = #{elementKey}::uuid
     </select>
 
+    <!-- 폴더 내 동일한 파일명 존재 확인 -->
+    <select id="isFileNameExistedInFolder" resultType="java.lang.Boolean">
+        SELECT
+            CASE
+                WHEN COUNT(*) > 0 THEN true
+                ELSE false
+                END AS result
+        FROM tables.tbl_cloud
+        WHERE
+            is_deleted = false
+          AND name = #{fileName}
+    </select>
+
+    <!-- 파일 메타데이터 업로드 -->
+    <insert id="uploadFile">
+        INSERT INTO tables.tbl_cloud
+        (parent_element_key, name, element_path, file_size, reg_user_key)
+        VALUES
+        (#{parentElementKey}::uuid, #{name}, #{elementPath}, #{fileSize}::int8, #{regUserKey}::uuid)
+    </insert>
+
 </mapper>

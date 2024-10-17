@@ -33,4 +33,8 @@ public interface UserMapper {
 
     // 유저 이메일 조회
     String getUserEmail(String userKey);
+
+    // 유저 키 조회
+    String getUserKey(String email);
+
 }

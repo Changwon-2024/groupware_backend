@@ -94,4 +94,14 @@
           AND user_key = #{userKey}::uuid
     </select>
 
+    <!-- 유저 키 조회 -->
+    <select id="getUserKey" resultType="java.lang.String">
+        SELECT user_key
+        FROM tables.tbl_user
+        WHERE is_deleted = false
+        AND email = #{email}
+        ORDER BY reg_date_time DESC
+        LIMIT 1
+    </select>
+
 </mapper>
