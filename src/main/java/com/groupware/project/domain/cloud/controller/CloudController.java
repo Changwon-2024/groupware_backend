@@ -1,6 +1,6 @@
 package com.groupware.project.domain.cloud.controller;
 
-import com.groupware.project.domain.cloud.dto.CloudElementDTO;
+import com.groupware.project.domain.cloud.dto.CloudCurrentInfoDTO;
 import com.groupware.project.domain.cloud.dto.CloudUploadDTO;
 import com.groupware.project.domain.cloud.service.CloudService;
 import com.groupware.project.global.exceptions.CustomRuntimeException;
@@ -25,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Map;
 
 @Tag(name = "02. 클라우드 관련")
@@ -41,17 +40,17 @@ public class CloudController {
     @Operation(summary = "1. 최상위 폴더 조회",
             description = "클라우드 서비스 접속 시 최상위 폴더 접근을 위한 api입니다.")
     @PostMapping("path/root")
-    public ResponseEntity<ResponseDTO<List<CloudElementDTO>>> getRootFolderInfo(
+    public ResponseEntity<ResponseDTO<CloudCurrentInfoDTO>> getRootFolderInfo(
             @Parameter(hidden = true) @RequestHeader("Authorization") String accessToken) {
 
         jwtGlobalService.getTokenInfo(accessToken, 2);
 
-        List<CloudElementDTO> elementList = cloudService.getRootFolderInfo();
+        CloudCurrentInfoDTO currentInfo = cloudService.getRootFolderInfo();
 
-        ResponseDTO<List<CloudElementDTO>> responseDTO =
-                ResponseDTO.<List<CloudElementDTO>>builder()
+        ResponseDTO<CloudCurrentInfoDTO> responseDTO =
+                ResponseDTO.<CloudCurrentInfoDTO>builder()
                         .result(1)
-                        .data(elementList)
+                        .data(currentInfo)
                         .build();
 
         return ResponseEntity.ok().body(responseDTO);
@@ -60,7 +59,7 @@ public class CloudController {
     @Operation(summary = "2. 하위 폴더 조회",
             description = "특정 폴더의 하위 정보를 조회하는 api입니다.")
     @PostMapping("path/sub")
-    public ResponseEntity<?> getSubFolderInfo(
+    public ResponseEntity<ResponseDTO<CloudCurrentInfoDTO>> getSubFolderInfo(
             @Parameter(hidden = true) @RequestHeader("Authorization") String accessToken,
             @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
                     schemaProperties = {
@@ -71,12 +70,12 @@ public class CloudController {
 
         jwtGlobalService.getTokenInfo(accessToken, 2);
 
-        List<CloudElementDTO> elementList = cloudService.getSubFolderInfo(requestBody);
+        CloudCurrentInfoDTO currentInfo = cloudService.getSubFolderInfo(requestBody);
 
-        ResponseDTO<List<CloudElementDTO>> responseDTO =
-                ResponseDTO.<List<CloudElementDTO>>builder()
+        ResponseDTO<CloudCurrentInfoDTO> responseDTO =
+                ResponseDTO.<CloudCurrentInfoDTO>builder()
                         .result(1)
-                        .data(elementList)
+                        .data(currentInfo)
                         .build();
 
         return ResponseEntity.ok().body(responseDTO);
@@ -85,7 +84,7 @@ public class CloudController {
     @Operation(summary = "3. 상위 폴더 조회",
             description = "특정 폴더의 상위 정보를 조회하는 api입니다.")
     @PostMapping("path/parent")
-    public ResponseEntity<ResponseDTO<List<CloudElementDTO>>> getParentFolderInfo(
+    public ResponseEntity<ResponseDTO<CloudCurrentInfoDTO>> getParentFolderInfo(
             @Parameter(hidden = true) @RequestHeader("Authorization") String accessToken,
             @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
                     schemaProperties = {
@@ -96,12 +95,12 @@ public class CloudController {
 
         jwtGlobalService.getTokenInfo(accessToken, 2);
 
-        List<CloudElementDTO> elementList = cloudService.getParentFolderInfo(requestBody);
+        CloudCurrentInfoDTO currentInfo = cloudService.getParentFolderInfo(requestBody);
 
-        ResponseDTO<List<CloudElementDTO>> responseDTO =
-                ResponseDTO.<List<CloudElementDTO>>builder()
+        ResponseDTO<CloudCurrentInfoDTO> responseDTO =
+                ResponseDTO.<CloudCurrentInfoDTO>builder()
                         .result(1)
-                        .data(elementList)
+                        .data(currentInfo)
                         .build();
 
         return ResponseEntity.ok().body(responseDTO);
@@ -138,7 +137,7 @@ public class CloudController {
                             @SchemaProperty(name = "elementKey",
                                     schema = @Schema(type = "string", example = "파일 키 (폴더일 경우 다운로드 불가능)")),
                     }
-            ))@RequestBody Map<String, Object> requestBody) {
+            )) @RequestBody Map<String, Object> requestBody) {
 
         jwtGlobalService.getTokenInfo(accessToken, 2);
 

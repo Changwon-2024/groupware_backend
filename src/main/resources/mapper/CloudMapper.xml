@@ -6,7 +6,7 @@
 <mapper namespace="com.groupware.project.domain.cloud.mapper.CloudMapper">
 
     <!-- 하위 요소 조회 -->
-    <select id="getElementsOfFolder" resultType="com.groupware.project.domain.cloud.dto.CloudElementDTO">
+    <select id="getChildrenInfo" resultType="com.groupware.project.domain.cloud.dto.CloudElementDTO">
         SELECT *
         FROM tables.tbl_cloud
         WHERE is_deleted = false

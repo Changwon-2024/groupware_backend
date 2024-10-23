@@ -1,5 +1,6 @@
 package com.groupware.project.domain.cloud.service;
 
+import com.groupware.project.domain.cloud.dto.CloudCurrentInfoDTO;
 import com.groupware.project.domain.cloud.dto.CloudElementDTO;
 import com.groupware.project.domain.cloud.dto.CloudUploadDBDTO;
 import com.groupware.project.domain.cloud.dto.CloudUploadDTO;
@@ -45,10 +46,13 @@ public class CloudService {
      * 최상위 폴더 내 정보 조회
      * @return 최상위 폴더 내 요소 리스트
      */
-    public List<CloudElementDTO> getRootFolderInfo() {
+    public CloudCurrentInfoDTO getRootFolderInfo() {
 
-        return Optional.ofNullable(cloudMapper.getElementsOfFolder(rootKey))
-                .orElse(Collections.emptyList());
+        return CloudCurrentInfoDTO.builder()
+                .you(cloudMapper.getElementInfo(rootKey))
+                .children(Optional.ofNullable(cloudMapper.getChildrenInfo(rootKey))
+                        .orElse(Collections.emptyList()))
+                .build();
     }
 
     /**
@@ -56,7 +60,7 @@ public class CloudService {
      * @param requestBody elementKey
      * @return 폴더일 경우 조회 아닐 경우 오류
      */
-    public List<CloudElementDTO> getSubFolderInfo(Map<String, Object> requestBody) {
+    public CloudCurrentInfoDTO getSubFolderInfo(Map<String, Object> requestBody) {
 
         String elementKey = requestBody.get("elementKey").toString();
 
@@ -68,8 +72,11 @@ public class CloudService {
         if (elementDTO.getFileSize() != null)
             throw new CustomRuntimeException("하위 항목은 폴더만 조회할 수 있어요.");
 
-        return Optional.ofNullable(cloudMapper.getElementsOfFolder(elementKey))
-                .orElse(Collections.emptyList());
+        return CloudCurrentInfoDTO.builder()
+                .you(elementDTO)
+                .children(Optional.ofNullable(cloudMapper.getChildrenInfo(elementKey))
+                        .orElse(Collections.emptyList()))
+                .build();
     }
 
     /**
@@ -77,7 +84,7 @@ public class CloudService {
      * @param requestBody elementKey
      * @return 상위 폴더 요소 정보 조회
      */
-    public List<CloudElementDTO> getParentFolderInfo(Map<String, Object> requestBody) {
+    public CloudCurrentInfoDTO getParentFolderInfo(Map<String, Object> requestBody) {
 
         String elementKey = requestBody.get("elementKey").toString();
 
@@ -89,9 +96,11 @@ public class CloudService {
         if (elementDTO.getParentElementKey() == null)
             throw new CustomRuntimeException("이미 최상위 폴더를 조회하고 있어요.");
 
-        return Optional.ofNullable(cloudMapper.getElementsOfFolder(elementDTO.getParentElementKey()))
-                .orElse(Collections.emptyList());
-
+        return CloudCurrentInfoDTO.builder()
+                .you(cloudMapper.getElementInfo(elementDTO.getParentElementKey()))
+                .children(Optional.ofNullable(cloudMapper.getChildrenInfo(elementDTO.getParentElementKey()))
+                        .orElse(Collections.emptyList()))
+                .build();
     }
 
     /**

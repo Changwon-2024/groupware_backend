@@ -10,7 +10,7 @@ import java.util.List;
 public interface CloudMapper {
 
     // 요소 키로 폴더 내 하위 정보 조회
-    List<CloudElementDTO> getElementsOfFolder(String elementKey);
+    List<CloudElementDTO> getChildrenInfo(String elementKey);
 
     // 요소 세부 정보 조회
     CloudElementDTO getElementInfo(String elementKey);
