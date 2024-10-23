@@ -313,6 +313,9 @@ public class CloudService {
 
         String elementKey = requestBody.get("elementKey").toString();
 
+        if (elementKey.equals(rootKey))
+            throw new CustomRuntimeException("최상위 폴더는 삭제할 수 없어요.");
+
         CloudElementDTO elementDTO = cloudMapper.getElementInfo(elementKey);
 
         if (elementDTO == null)
@@ -328,6 +331,9 @@ public class CloudService {
         // 폴더 삭제
         File folder = new File(prefixPath + elementDTO.getElementPath());
         folder.delete();
+
+        // TODO 폴더가 비어있지 않은 경우 오류 발생 (DB에서 관리하여도 파일 시스템에서 한번 더 체크할 필요 있음)
+        // 폴더가 비어있지 않은 경우 하위 정보를 모두 삭제하는 것으로 해결
 
         // DB 반영
 //        cloudMapper.deleteFolder();
