@@ -178,7 +178,7 @@ public class CloudService {
         CloudElementDTO elementDTO = cloudMapper.getElementInfo(elementKey);
 
         if (elementDTO == null)
-            throw new CustomRuntimeException("파일을 찾을 수 없어요. 삭제되었거나 이동되었을 수 있어요.");
+            throw new CustomRuntimeException("파일을 찾을 수 없어요. 이미 삭제되었거나 이동된 것 같아요.");
 
         if (elementDTO.getFileSize() == null)
             throw new CustomRuntimeException("폴더는 다운로드 받을 수 없어요.");
@@ -187,8 +187,150 @@ public class CloudService {
 
         Path path = Paths.get(prefixPath + fileRelativePath);
         if (!Files.exists(path))
-            throw new CustomRuntimeException("파일을 찾을 수 없어요. 삭제되었거나 이동되었을 수 있어요.");
+            throw new CustomRuntimeException("파일을 찾을 수 없어요. 이미 삭제되었거나 이동된 것 같아요.");
 
         return path;
+    }
+
+    /**
+     * 요소 이름 수정
+     * 파일일 경우 확장자를 제외한 파일명만 수정됨
+     * @param jwtResponseDTO 접속 유저 정보 (수정 기록)
+     * @param requestBody elementKey, name
+     */
+    @Transactional
+    public void renameElement(JwtResponseDTO jwtResponseDTO, Map<String, Object> requestBody) {
+
+        String elementKey = requestBody.get("elementKey").toString();
+        String name = requestBody.get("name").toString();
+
+        CloudElementDTO elementDTO = cloudMapper.getElementInfo(elementKey);
+
+        if (elementDTO == null)
+            throw new CustomRuntimeException("이미 삭제되었거나 이동된 것 같아요.");
+
+        String fileAbsolutePath = prefixPath + elementDTO.getElementPath();
+
+        if (elementDTO.getFileSize() == null) { // 폴더명 변경
+
+            // 중복 확인
+            List<String> folderNames =
+                    cloudMapper.getChildrenInfo(elementDTO.getParentElementKey())
+                            .stream()
+                            .filter(dto -> dto.getFileSize() == null)
+                            .map(CloudElementDTO::getName)
+                            .toList();
+            if (folderNames.contains(name))
+                throw new CustomRuntimeException("이미 폴더명이 존재해요.");
+
+            File oldFolder = new File(fileAbsolutePath);
+            File newFolder = new File(fileAbsolutePath.substring(fileAbsolutePath.lastIndexOf("/")) + name);
+            oldFolder.renameTo(newFolder);
+
+            // DB 갱신
+//            cloudMapper.renameFolder();
+
+        } else { // 파일명 변경
+
+            // 중복 확인
+
+            // DB 갱신
+//            cloudMapper.renameFile();
+
+        }
+    }
+
+    /**
+     * 파일 삭제
+     * @param jwtResponseDTO 접속 유저 정보 (파일 삭제 기록)
+     * @param requestBody elementKey
+     */
+    @Transactional
+    public void deleteFile(JwtResponseDTO jwtResponseDTO, Map<String, Object> requestBody) {
+
+        String elementKey = requestBody.get("elementKey").toString();
+
+        CloudElementDTO elementDTO = cloudMapper.getElementInfo(elementKey);
+
+        if (elementDTO == null)
+            throw new CustomRuntimeException("파일을 찾을 수 없어요. 이미 삭제되었거나 이동된 것 같아요.");
+
+        if (elementDTO.getFileSize() == null)
+            throw new CustomRuntimeException("폴더는 이 방법으로 삭제할 수 없어요.");
+
+        File file = new File(prefixPath + elementDTO.getElementPath());
+        file.delete();
+
+//        cloudMapper.deleteFile(elementKey);
+    }
+
+    /**
+     * 폴더 생성
+     * @param jwtResponseDTO 접속 유저 정보 (폴더 생성 기록)
+     * @param requestBody elementKey, name
+     */
+    @Transactional
+    public void createFolder(JwtResponseDTO jwtResponseDTO, Map<String, Object> requestBody) {
+
+        String elementKey = requestBody.get("elementKey").toString();
+        String name = requestBody.get("name").toString();
+
+        CloudElementDTO elementDTO = cloudMapper.getElementInfo(elementKey);
+
+        if (elementDTO == null)
+            throw new CustomRuntimeException("폴더를 찾을 수 없어요. 이미 삭제되었거나 이동된 것 같아요.");
+
+        if (elementDTO.getFileSize() != null)
+            throw new CustomRuntimeException("파일 밑에 폴더를 생성할 수 없어요.");
+
+        // 폴더 중복 확인
+        List<String> folderNames =
+                cloudMapper.getChildrenInfo(elementDTO.getParentElementKey())
+                        .stream()
+                        .filter(dto -> dto.getFileSize() == null)
+                        .map(CloudElementDTO::getName)
+                        .toList();
+        if (folderNames.contains(name))
+            throw new CustomRuntimeException("이미 폴더명이 존재해요.");
+
+        // 폴더 생성
+        File folder = new File(prefixPath + elementDTO.getElementPath() + "/" + name);
+        folder.mkdirs();
+
+        // DB 반영
+//        cloudMapper.createFolder();
+
+    }
+
+    /**
+     * 폴더 삭제
+     * 폴더 내 하위 요소가 존재할 경우 삭제 불가능
+     * @param jwtResponseDTO 접속 유저 정보 (폴더 삭제 기록)
+     * @param requestBody elementKey
+     */
+    @Transactional
+    public void deleteFolder(JwtResponseDTO jwtResponseDTO, Map<String, Object> requestBody) {
+
+        String elementKey = requestBody.get("elementKey").toString();
+
+        CloudElementDTO elementDTO = cloudMapper.getElementInfo(elementKey);
+
+        if (elementDTO == null)
+            throw new CustomRuntimeException("폴더를 찾을 수 없어요. 이미 삭제되었거나 이동된 것 같아요.");
+
+        if (elementDTO.getFileSize() != null)
+            throw new CustomRuntimeException("파일은 이 방법으로 삭제할 수 없어요.");
+
+        if (!Optional.ofNullable(cloudMapper.getChildrenInfo(elementKey))
+                .orElse(Collections.emptyList()).isEmpty())
+            throw new CustomRuntimeException("하위 요소가 존재할 때는 폴더를 삭제할 수 없어요.");
+
+        // 폴더 삭제
+        File folder = new File(prefixPath + elementDTO.getElementPath());
+        folder.delete();
+
+        // DB 반영
+//        cloudMapper.deleteFolder();
+
     }
 }

@@ -157,48 +157,108 @@ public class CloudController {
         }
     }
 
-    @Operation(summary = "6. 파일 이름 수정",
-            description = "파일명을 수정하는 api입니다.")
+    @Operation(summary = "6. 요소 이름 수정",
+            description = "파일명 혹은 폴더이름을 수정하는 api입니다. 확장자는 변경이 불가능 합니다.")
     @PostMapping("rename")
-    public ResponseEntity<?> renameFile(
-            @Parameter(hidden = true) @RequestHeader("Authorization") String accessToken) {
+    public ResponseEntity<?> renameElement(
+            @Parameter(hidden = true) @RequestHeader("Authorization") String accessToken,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+                    schemaProperties = {
+                            @SchemaProperty(name = "elementKey",
+                                    schema = @Schema(type = "string", example = "요소 키")),
+                            @SchemaProperty(name = "name",
+                                    schema = @Schema(type = "string", example = "변경할 이름 (파일일 경우 확장자 제외)")),
+                    }
+            )) @RequestBody Map<String, Object> requestBody) {
 
         JwtResponseDTO jwtResponseDTO = jwtGlobalService.getTokenInfo(accessToken, 1);
 
-        return null;
+        cloudService.renameElement(jwtResponseDTO, requestBody);
+
+        ResponseDTO<Object> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("이름을 수정했어요.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
     }
 
     @Operation(summary = "7. 파일 삭제",
             description = "파일을 삭제하는 api입니다.")
     @PostMapping("delete")
     public ResponseEntity<?> deleteFile(
-            @Parameter(hidden = true) @RequestHeader("Authorization") String accessToken) {
+            @Parameter(hidden = true) @RequestHeader("Authorization") String accessToken,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+                    schemaProperties = {
+                            @SchemaProperty(name = "elementKey",
+                                    schema = @Schema(type = "string", example = "파일 키 (폴더일 경우 삭제 불가능)")),
+                    }
+            )) @RequestBody Map<String, Object> requestBody) {
 
         JwtResponseDTO jwtResponseDTO = jwtGlobalService.getTokenInfo(accessToken, 1);
 
-        return null;
+        cloudService.deleteFile(jwtResponseDTO, requestBody);
+
+        ResponseDTO<Object> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("파일을 삭제했어요.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
     }
 
     @Operation(summary = "8. 폴더 생성",
             description = "폴더를 생성하는 api입니다.")
     @PostMapping("create/folder")
     public ResponseEntity<?> createFolder(
-            @Parameter(hidden = true) @RequestHeader("Authorization") String accessToken) {
+            @Parameter(hidden = true) @RequestHeader("Authorization") String accessToken,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+                    schemaProperties = {
+                            @SchemaProperty(name = "elementKey",
+                                    schema = @Schema(type = "string", example = "부모 폴더 키")),
+                            @SchemaProperty(name = "name",
+                                    schema = @Schema(type = "string", example = "폴더명")),
+                    }
+            )) @RequestBody Map<String, Object> requestBody) {
 
         JwtResponseDTO jwtResponseDTO = jwtGlobalService.getTokenInfo(accessToken, 1);
 
-        return null;
+        cloudService.createFolder(jwtResponseDTO, requestBody);
+
+        ResponseDTO<Object> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("폴더를 생성했어요.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
     }
 
-    @Operation(summary = "9. 폴더 및 하위 요소 일괄 삭제",
-            description = "폴더와 해당 폴더의 모든 하위 요소를 삭제하는 api입니다.")
-    @PostMapping("delete/all")
-    public ResponseEntity<?> deleteAll(
-            @Parameter(hidden = true) @RequestHeader("Authorization") String accessToken) {
+    @Operation(summary = "9. 폴더 삭제",
+            description = "폴더가 비어있을 경우 폴더 삭제를 실행하는 api입니다.")
+    @PostMapping("delete/folder")
+    public ResponseEntity<?> deleteFolder(
+            @Parameter(hidden = true) @RequestHeader("Authorization") String accessToken,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(
+                    schemaProperties = {
+                            @SchemaProperty(name = "elementKey",
+                                    schema = @Schema(type = "string", example = "폴더 키 (폴더가 비어있을 경우 삭제 가능)")),
+                    }
+            )) @RequestBody Map<String, Object> requestBody) {
 
         JwtResponseDTO jwtResponseDTO = jwtGlobalService.getTokenInfo(accessToken, 1);
 
-        return null;
+        cloudService.deleteFolder(jwtResponseDTO, requestBody);
+
+        ResponseDTO<Object> responseDTO =
+                ResponseDTO.builder()
+                        .result(1)
+                        .message("폴더를 삭제했어요.")
+                        .build();
+
+        return ResponseEntity.ok().body(responseDTO);
     }
 
 }
