@@ -228,10 +228,12 @@ public class CloudService {
             oldFolder.renameTo(newFolder);
 
             // DB 갱신
-//            cloudMapper.renameFolder();
+            String userEmail = userMapper.getUserKey(jwtResponseDTO.getEmail());
+            cloudMapper.renameFolder(elementDTO.getElementKey(), name, userEmail);
 
         } else { // 파일명 변경
 
+            // TODO 파일일 경우 .확장자를 제외한 파일명만 변경하여야하며 중복 확인시에는 확장자를 포함한 이름을 검사하여야함
             // 중복 확인
 
             // DB 갱신

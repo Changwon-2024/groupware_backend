@@ -43,4 +43,10 @@
         (#{parentElementKey}::uuid, #{name}, #{elementPath}, #{fileSize}::int8, #{regUserKey}::uuid)
     </insert>
 
+    <!-- 폴더명 변경 -->
+    <update id="renameFolder">
+
+    </update>
+
+
 </mapper>

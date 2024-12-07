@@ -21,4 +21,6 @@ public interface CloudMapper {
     // 파일 메타데이터 업로드
     void uploadFile(CloudUploadDBDTO uploadDTO);
 
+    // 폴더명 변경
+    void renameFolder(String elementKey, String name, String userEmail);
 }
